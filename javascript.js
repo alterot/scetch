@@ -1,75 +1,56 @@
+//Add 
+
 const grid = document.querySelector('.grid');
 const reset = document.querySelector('#reset');
 const classic = document.querySelector('#classic');
 const rainbow = document.querySelector('#rainbow');
+const grey = document.querySelector('#grey');
 const grid16 = document.querySelector('.grid16');
 const grid32 = document.querySelector('.grid32');
 const grid64 = document.querySelector('.grid64');
 
-/*
-
-FUNCTION FOR INCREASING BLACKNESS:
-function sketchColor() {
-  const gridItems = document.querySelectorAll('.grid-item');
-  gridItems.forEach(item => {
-    let opacity = 0; // set initial opacity to 0
-    item.addEventListener('mouseover', () => {
-      opacity += 0.1; // increase opacity by 0.1 on each mouseover
-      item.style.backgroundColor = `rgba(0, 0, 0, ${opacity})`; // set the background color with increased opacity
-    });
-  });
-}
-
-ALSO: create TWO new funtions for handling grid size changes (including button color change) 
-AND a new function to handle color change. Even more important with a third button for black / white.  
-
-*/
-
-let classicMode = true;
+let mode = 'classic';
 createGrid(16, 16);
 classic.style.backgroundColor = 'white';
 grid16.style.backgroundColor = 'white';
 
-grid16.addEventListener('click', () => {
-    createGrid(16, 16);
-    grid16.style.backgroundColor = 'white';
-    grid32.style.backgroundColor = '';
-    grid64.style.backgroundColor = '';
-});
+function handleGridSizeChange(rows, columns) {
+    createGrid(rows, columns);
+    grid16.style.backgroundColor = rows === 16 ? 'white' : '';
+    grid32.style.backgroundColor = rows === 32 ? 'white' : '';
+    grid64.style.backgroundColor = rows === 64 ? 'white' : '';
+    changeColor();
+}
 
-grid32.addEventListener('click', () => {
-    createGrid(32, 32);
-    grid16.style.backgroundColor = '';
-    grid32.style.backgroundColor = 'white';
-    grid64.style.backgroundColor = '';
-});
+function handleColorModeChange(selectedMode) {
+    mode = selectedMode;
+    classic.style.backgroundColor = mode === 'classic' ? 'white' : '';
+    rainbow.style.backgroundColor = mode === 'rainbow' ? 'white' : '';
+    grey.style.backgroundColor = mode === 'grey' ? 'white' : '';
+    changeColor();
+}
 
-grid64.addEventListener('click', () => {
-    createGrid(64, 64);
-    grid16.style.backgroundColor = '';
-    grid32.style.backgroundColor = '';
-    grid64.style.backgroundColor = 'white';
-});
+function changeColor() {
+    const gridItems = document.querySelectorAll('.grid-item'); //make this a 'clear' function instead. Duplicate of clear button
+    gridItems.forEach(item => {
+        item.style.backgroundColor = '';
+    });
+    
+    if (mode === 'classic') {
+        scetchBlack();
+    } else if (mode === 'rainbow') {
+        scetchColor();
+    } else if (mode === 'grey') {
+        scetchGrey();
+    }
+}
 
-rainbow.addEventListener('click', () => {
-    classic.style.backgroundColor = '';
-    rainbow.style.backgroundColor = 'white';
-    classicMode = false;
-    createGrid(16, 16);
-    grid16.style.backgroundColor = 'white';
-    grid32.style.backgroundColor = '';
-    grid64.style.backgroundColor = '';
-});
-
-classic.addEventListener('click', () => {
-    rainbow.style.backgroundColor = '';
-    classic.style.backgroundColor = 'white';
-    classicMode = true;
-    createGrid(16, 16);
-    grid16.style.backgroundColor = 'white';
-    grid32.style.backgroundColor = '';
-    grid64.style.backgroundColor = '';
-})
+grid16.addEventListener('click', () => handleGridSizeChange(16, 16));
+grid32.addEventListener('click', () => handleGridSizeChange(32, 32));
+grid64.addEventListener('click', () => handleGridSizeChange(64, 64));
+rainbow.addEventListener('click', () => handleColorModeChange('rainbow'));
+classic.addEventListener('click', () => handleColorModeChange('classic'));
+grey.addEventListener('click', () => handleColorModeChange('grey'));
 
 function createGrid(rows, columns) {  
     
@@ -84,11 +65,7 @@ function createGrid(rows, columns) {
         grid.appendChild(gridItem);
     };
 
-    if(classicMode) {
-        scetchBlack();
-    } else {
-        scetchColor();
-    };
+    changeColor();
 }
 
 function scetchBlack () {
@@ -108,6 +85,17 @@ function scetchColor () {
             item.style.backgroundColor = '#' + rainbow;
     })
 });
+}
+
+function scetchGrey() {
+    const gridItems = document.querySelectorAll('.grid-item');
+    gridItems.forEach(item => {
+        let opacity = 0; 
+        item.addEventListener('mouseover', () => {
+        opacity += 0.1;
+        item.style.backgroundColor = `rgba(0, 0, 0, ${opacity})`;
+    });
+  });
 }
 
 reset.addEventListener('click', () => {
